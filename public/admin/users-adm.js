@@ -24,7 +24,7 @@ User.prototype.createNew = function createNew(){
 	$.ajax("/users/add",{
 		type:"post",
 		contentType:"application/json",
-		data:JSON.stingify(data),
+		data:JSON.stringify(data),
 		success: function(result) {
 			for(var nm in result){
     			if(!result.hasOwnProperty(nm)) continue;
