@@ -1,9 +1,9 @@
 //4.04.2018 Lewiczkij M
-// Подключение к mongodb для последующей работы других модулей
+// РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє mongodb РґР»СЏ РїРѕСЃР»РµРґСѓСЋС‰РµР№ СЂР°Р±РѕС‚С‹ РґСЂСѓРіРёС… РјРѕРґСѓР»РµР№
 "use strict"
 var mongo = require("mongodb");
-// Подключение и используемая база данных
-var path = "mongodb://localhost:27017";
+// РџРѕРґРєР»СЋС‡РµРЅРёРµ Рё РёСЃРїРѕР»СЊР·СѓРµРјР°СЏ Р±Р°Р·Р° РґР°РЅРЅС‹С…
+var path = process.env.MONGODB_URI;
 var db = "test";
 
 var connection = mongo.connect(path).
