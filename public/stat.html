@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="test.css" rel="stylesheet" media="all">
+    <script type="text/javascript" src="statistic.js"></script>
+    <script type="text/javascript" src="save.js"></script>
+    <script type="text/javascript" src="until.js"></script>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript">
+        function loader() {
+            console.log(1)
+            save.getUIDfromLoc()
+            save.renewLinksWithUID();
+            save.loadStatistic(function(data) {
+                statistic.zone = document.body;
+                statistic.table = data;
+                statistic.parse();
+                var selectmenu = document.querySelector("#selectmenu");
+                var content = document.querySelector("#content");
+                statistic.catalog(selectmenu,content)
+            });
+        }
+    </script>
+    <style type="text/css">
+        #selectmenu div {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+    <title>Статистика</title>
+</head>
+<body onload="loader()">
+<div id="toolbar">
+    <ul>
+        <li><a href="index.html">Главное&nbsp;меню</a></li>
+    </ul>
+</div>
+<div id = "selectmenu"></div>
+<div id = "content"></div>
+<div id="header">
+    <p>Version 1.0.0</p><!-- TODO number of version sinhron with cordova config.xml-->
+    <p>&copy; Michael Levitsky</p>
+</div>
+</body>
+</html>

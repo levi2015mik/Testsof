@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+	<head>
+	<meta charset="utf-8">
+	<title>Admin</title>
+	<script type="text/javascript" src="/javascripts/jquery.js"></script>
+	<script type="text/javascript" src="users-adm.js"></script>
+	<script type="text/javascript" src="until.js"></script>
+	<script type="text/javascript">
+
+		var users =[];
+
+		$(document).ready(function() {
+			// Начало работы программы: обработчиков кнопкам
+
+			// Создание нового пользователя
+			$("#btnCreate").click(function click() {
+				var name = $("#username").val();
+				var descript = $("#description").val();
+				var newUsr = new User(name,descript); 
+				users.collection.push(newUsr)
+				$("#new-user-form").find("input:text").val("");
+			})
+
+			// Установка статических свойств User
+			User.table ={
+				element:$("#userList"),
+				tr:`<td data-link=showPath data-content=name></td>
+					<td data-content=description></td>
+					<td><a href="stat.html" data-href=uid>Статистика пользователя</a></td>
+			<td><a data-link=del href=#>удалить</a></td>`,
+				links:{
+					del: function(self){
+						self.del()
+					},
+					statistic: function(self){console.log("stat");console.log(self)},
+					showPath: function(self) {
+						console.log(self)
+						var innerPath = "/index.html"
+						var href = location.protocol + "//" + 
+						location.host + innerPath + "?UID=" + self.id 
+						var text = `<div style=padding:10px>Ссылка на ползователя: <br><a href= ${href} > ${href} </a></div>`
+						$("#dialog").html(text)
+						var dialog = $("#dialog")[0]
+						dialog.showModal()
+						dialog.addEventListener('click', (event) => {
+						  if (event.target === dialog) {
+						    dialog.close('cancelled');
+						  }
+						});
+					}
+				},
+				// Создание всплывющего окна для вывода данных пользователя
+				onCreate:function(self) {
+					var innerPath = "/new"
+					var href = location.protocol + "//" + 
+						location.host + innerPath + "/?UID=" + self.id 
+					var content = `<div><p>Создан новый пользователь: <span data-content=name></span></P>
+						<p>Для его идентификации и входа в систему будет применяться следующая ссылка:
+						<a href=${href}>${href}</a>
+						<p>Отправте это пользователю</p>
+						<center><a href=#>[Закрыть]</a></center>
+						</div>`
+
+					var el = $(content);
+					el.css({
+						border:     "solid 2px #CC0000",
+						padding:    "0px 10px 10px 10px",
+						background: "#FFFFCC",
+						position:   "absolute",
+						width:      "300px",
+						top:        "100px",
+						left: 		"100px" 
+					})
+
+					$(el.find("[data-content=id]")).css({
+						"font-size":"150%",
+						color:"#FF0000",
+						padding:5,
+						display:"inline-block"});
+					
+					// Закрытие всплывающего окна при нажатии нассылку и на свободное пространство
+					el.find("a").click(function() {
+						el.remove()
+					})
+
+					$(document.body).click(function(event) {
+						if(!el.is(event.target) && el.has(event.target).length === 0) el.remove()
+					})
+
+					$(document.body).append(el);
+				}
+			}
+
+			//
+			User.onCreate = function onCreate(user) {
+			}
+
+			//
+			User.load(users);
+		});
+		
+	</script>
+	</head>
+	<body>
+		<h1>Управление пользователями</h1>
+		<ul>
+			<li><a href="exercises.html">Упражнения</a></li>
+			<li><a href="test.html">Новое упражнение</a></li>
+			<li><a href="stat.html">Статистика</a></li>
+		</ul>
+		<p>
+			В этом файле можно посмотреть список всех пользователей, 
+			добавить новых, удалить существующих
+		</p>
+		<div id="new"><form id="new-user-form">
+			<fieldset>
+			<legend>Новый пользователь</legend>
+			<input type="text"   id="username">
+			<input type="text"   id="description">
+			<input type="button" id="btnCreate" value="Создать">
+			<input type="reset">
+			</fieldset>
+		</form></div>
+		<dialog id="dialog"></dialog>
+		<div id="content">
+			<table id="userList"></table>
+		</div>
+	</body>
+</html>

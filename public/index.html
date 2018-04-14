@@ -1,10 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>Main</title>
+    <!--Новый полностью переделанный пользовательский индекс.
+        Содержит два списка заданий - персональный и общий и ссылки на статистику к каждому заданию 
+        TODO Дизайн требует доработки-->
+    <meta charset="utf-8">
+    <link href="test.css" rel="stylesheet" media="all">
+    <style type="text/css">
+        #toolbar li {
+            display: block;
+            width: auto;
+            padding: 5px 50px;
+        }
+/*        #toolbar  span {
+            color: #F00;
+            padding-left: 150px;
+        }
+*/    
+    </style>
+    <script src="save.js" type="text/javascript"></script>
+    <script src="exercises.js" type="text/javascript"></script>
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="until.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    
+    //Настройки, связанные со страницей
+    var settings = {
+        tr:`<td><a href="test.html" data-content="menuname" data-href="eid"></a></td>
+            <td><a href="stat.html" data-href="eid">Статистика</a></td>`,
+    }
+
+    Exercise.table = settings
+
+    var personalExercises = [];
+    var commonExercises   = []
+    var userData = {}
+
+    //Запуск операций загрузки данных и отрисовки страницы
+    $(document).ready(function() {
+        save.getUIDfromLoc();
+        if(save.location.UID == undefined){
+            document.write("<h1>Не выполнен вход в систему!</h1>")
+            return;
+        }
+        save.load(function(result){
+            userData = result.user
+            Exercise.load(result.personal,personalExercises,$("#personal"))
+            Exercise.load(result.common,commonExercises,$("#common"))
+
+            $("#username").html(userData.name);
+            save.renewLinksWithUID()
+            $("#statistic").prop("href","stat.html?UID=" + save.location.UID + "&EID=*")
+        })
+    })
+    </script>
 </head>
 <body>
-<img src="images/343110-sepik.jpg">
+<div id="toolbar">
+    <div>
+        <h3>Приветствую тебя, <span id="username"></span>!</h3>
+        <a href="#fg" id="statistic">Статистика</a>
+    </div>
+    <div>
+        <h5>Задания для тебя</h5>
+        <table id="personal"></table>
+    </div>
+    <div>
+        <h5>Эти тоже хорошо поделать</h5>
+        <table id="common"></table>
+    </div>
+</div>
+<div id="header">
+    <p>Version 1.0.0</p><!-- TODO number of version sinhron with cordova config.xml-->
+    <p>&copy; Michael Levitsky</p>
+</div>
 </body>
 </html>

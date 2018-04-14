@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<link href="test.css" rel="stylesheet" media="all">
+<script type="text/javascript" src="save.js"></script>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="statistic.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="until.js"></script>
+<script type="text/javascript">
+<!--
+
+//Объект настроек. Хранит основные настройки а также может предусматривать настройку в графическом режиме
+//default config written in config.conf
+if(typeof config == "undefined") {
+    var config = {};
+}
+config.conf= {};
+config.conf["menuname"]    = {value:"Настройки по умлчанию", hidden:true};
+config.conf["label1"]	   = {header:'Управление первым множителем'};
+config.conf['minfactor']   = {value:2,  type:'Минимальный множитель' };
+config.conf['maxfactor']   = {value:11, type:'Максимальный множитель'};
+config.conf['fraction']    = {value:1,  type:'Коэфициент, определяющий дробные множители'};
+config.conf["label2"]	   = {header:'Управление вторым множителем'};
+config.conf['minfactor2']  = {value:2,  type:'Минимальный множитель' };
+config.conf['maxfactor2']  = {value:11, type:'Максимальный множитель'};
+config.conf['fraction2']   = {value:1,  type:'Коэфициент, определяющий дробные множители'};
+config.conf["label3"]	   = {header:'Общие настройки'};
+config.conf['type']        = {value:2,  type:'Тип задания ', args:["пример", "уравнение", "автовыбор"]};
+config.conf['quest']       = {value:4,  type:'местонахождение неизвестной', args:["первый множитель", "второй множитель", "произведение", "множитель", "автовыбор"]};
+config.conf['answerprint'] = {value:0,  type:'выводить правильные ответы ?', args:["нет", "да"]};
+config.conf['exercout']    = {value:5,  type:'Количество упражнений на странице'};
+
+//переменная настройки действия. осуществляет выбор между сложением и умножением
+config.conf['sign'] = {value:0, type:'знак действия', args:["Умножение","Сложение"]};
+
+config.list = [];
+
+
+
+//Вспомогательный объект
+init = {};
+init.isStart = false;
+//переменные объекта init
+
+//Метод инициализации рабочих массивов не трогающих ничего другого
+init.arrays = function() {
+		//максимальный множитель задается как maxfactor + minfactor
+	init.maxfactor = config.conf['maxfactor'].value - config.conf['minfactor'].value;
+
+	init.maxfactorx = config.conf['maxfactor'].value  - config.conf['minfactor'].value;
+	init.maxfactory = config.conf['maxfactor2'].value - config.conf['minfactor2'].value;
+	init.fractionx  = config.conf['fraction'].value ;
+	init.fractiony  = config.conf['fraction2'].value ;
+	init.minfactorx = config.conf['minfactor'].value;
+	init.minfactory = config.conf['minfactor2'].value;
+
+	//двухмерный массив произведений. Произведения получины перемножением элементов, смещенных на минимальный множитель
+	// Два одномерных массива xfactors и yfactors отвечают за множители
+	this.factors = [];
+	this.xfactors = [];
+	this.yfactors = [];
+
+	//метод, инициализирующий расчет произведений
+	for (var i = 0; (i * init.fractionx ) <= this.maxfactorx; i++) {
+		this.factors[ i ] = [];
+		this.xfactors[i] = Math.round((this.minfactorx + i * this.fractionx) * 1000)/1000;
+	 	for (var j = 0; (j * init.fractiony) <= this.maxfactory; j++) {
+	 		if (this.yfactors[j] == undefined) {
+	 			this.yfactors[j] = Math.round((this.minfactory + j * this.fractiony) * 1000)/1000;
+	 		}
+
+	 		//Расчет главного рабочего массива Умножение корректно, 
+	 		//а сложение надо поработать
+	 		if(config.conf.sign.value == 1) 
+	 			this.factors[ i ][ j ] = Math.round((this.xfactors[i] + this.yfactors[j]) * 10000)/10000;
+	 		else 
+	 			this.factors[ i ][ j ] = Math.round(this.xfactors[i] * this.yfactors[j] * 10000) / 10000;
+	 	}
+	 }
+}
+
+//start выполняет инициализацию
+init.start = function() {
+    //Функция, создающая кнопки в меню
+    function writeToolbar(handler,name){
+        var toolbar = document.querySelector("#toolbar ul");
+        var newButton = document.createElement("li");
+        if(typeof handler == "function"){
+			newButton.innerHTML = name;
+        	newButton.onclick = handler;
+		}
+		if(typeof handler == "string") newButton.innerHTML ="<a href='"+handler+"'>"+name+"</a>";
+        toolbar.appendChild(newButton);
+    }
+
+	//*******************
+	//Ввод дополнительных настроек в config.conf 
+	//здесь вводятся новые настройки, которые пока не были сохранены.
+	//Костыль, однако ИМХО, а как еще их внести. Это позволит вносить новые настройки хоть как то
+	//Сделано для внесения переключателя между умножением и делением
+	if(typeof(config.conf.sign) == "undefined")
+		config.conf["sign"] = {value:0, type:'знак действия', args:["Умножение","Сложение"]}; 	
+
+    //Проверка на загруженные объекты и оформление меню
+	//Здесь проверяется загрузка объектов настроек и клавиатуры. Это позволяет безболезненно отключать модули
+    if(!init.isStart) {
+        init.isStart = true;
+//        if(typeof main.keyboard != "undefined") {
+//            writeToolbar(main.keyboard.display, "Клавиатура");
+//        }
+		if(typeof FileSet != "undefined") {
+			writeToolbar(function(){ alert(0);}, "Сохранить примеры");
+		}
+		//writeToolbar("stat.html", "Статистика");
+		writeToolbar(config.edit, "настройки");		
+
+	}
+	
+	this.arrays()
+};
+
+//Объект умножения
+//Он содержит все функции, связанные со случайным выбором, составлением и проверкой
+//простых примеров и уравнений
+function Multiple()
+{
+//Переменные и константы объекта Multiple
+
+//Пример - объект вида {factor1: множитель 1, factor2: множитель 2,compos: произведение}
+this.exercise = {0: 1 , 1: 1 , 2: 1 };
+
+//Переменная для контроля правильности ответа.
+//Принимает 0, если проверяется первый множитель, 1 - второй и 2, если проверяется произведение
+this.controlparam = 2;
+
+//Задает тип задания {0: уравнение | 1: пример | 2:random}
+this.type = config.conf['type'].value;
+
+//задает неизвестную {0: множитель 1 | 1: множитель 2 | 2: произведение | 3: один из множителей | 4:random }
+this.quest = config.conf['quest'].value;
+
+//
+this.result;// = new Boolean();
+
+//Методы объекта Multiple
+
+//Выдача рандомных примеров возвращает объект вида {factor1: множитель 1, factor2: множитель 2,compos: произведение}
+//При 
+this.rand = function()
+{
+	// Значения i и j определяются в цикле, чтобы исключить ноль в произведении. Это исправляет ошибку деления на 0
+	var i,j;
+	do {
+		i = Math.round(Math.random() * (init.xfactors.length-1));
+		j = Math.round(Math.random() * (init.yfactors.length-1));
+	} while(init.factors[i][j] == 0);
+
+	this.exercise[0] = init.xfactors[i];
+	this.exercise[1] = init.yfactors[j];
+	this.exercise[2]  = init.factors[i][j];
+	return this.exercise[0]+' * '+this.exercise[1]+" = "+this.exercise[2];
+};
+
+//Контроль ответов. Принимает answer - ответ в виде строки,
+//возвращает boolean
+this.control = function(answer)
+{
+	this.result = (answer.toString() == this.exercise[this.controlparam].toString());
+	return this.result;
+};
+
+//Возвращает правильный ответ
+this.answerer = function()
+{
+	return this.exercise[this.controlparam];
+};
+
+//Этот метод создает строку - пример заданного вида.
+//Вид определяется следующими переменными:
+//Multiple.type: {equation: уравнение | calculation: пример | random}
+//Multiple.quest: {factor1: множитель 1 | factor2: множитель 2 | compos: произведение | randomparam: один из множителей | random }
+this.generator = function()
+{
+	//Внутренняя функция добавления скобок для отрицательных чисел
+	function addbrackets(num){
+		if (num < 0) {
+			return "(" + num + ")";
+		} else {
+			return num;
+		}
+	}
+
+	var ex;
+
+	//определение рандомов
+	var gtype =  (this.type == 2)  ? Math.round(Math.random()) : this.type;
+	var gquest;
+	switch (this.quest)
+	{
+		case 3:
+			gquest = Math.round(Math.random());
+			break;
+		case 4:
+			gquest = Math.round(Math.random() * 2 );
+			break;
+		default :
+			gquest = this.quest;
+			break;
+	}
+
+	// составление строки
+	// Добавление изменения знаков в вариантах сложения и умножения
+	// Переменные знака. Они задают знаки + * или - /
+	var add = "";
+	var del = "";
+	if(config.conf.sign.value == 0) {
+		add = " &bull; ";
+		del = " : ";
+	} else {
+		add = " + ";
+		del = " - ";
+	}
+
+	switch (gtype)
+	{
+		case 1:                     //уравнение
+		var sign = Math.round(Math.random()*(1-0));
+		switch (gquest)
+		{
+			case 0: // x + b = c    c - b = x
+			ex = 'x ' + add + addbrackets(this.exercise[1]) + ' = ' + this.exercise[2];
+			this.controlparam = 0;
+			break;
+			// a + x = c      c - a = x
+			case 1:
+			ex = this.exercise[0] + add + 'x = '+ this.exercise[2];
+			this.controlparam = 1;
+			break;
+			// x - a = b      x - b = a
+			case 2:
+				if(sign)	ex = 'x ' + del + addbrackets(this.exercise[0]) + " = " + this.exercise[1];
+				else	    ex = 'x ' + del + addbrackets(this.exercise[1]) + " = " + this.exercise[0];
+				this.controlparam = 2					
+			break;
+		}
+		break;
+		case 0:                //пример
+		switch (gquest)
+		{
+			case 0: // c - b =
+			ex = this.exercise[2] + del + addbrackets(this.exercise[1]) + ' = ';
+			this.controlparam = 0;
+			break;
+			case 1: // c - a =
+			ex = this.exercise[2] + del + addbrackets(this.exercise[0]) + ' = ';
+			this.controlparam = 1;
+			break;
+			case 2 : //a + b =
+			ex = this.exercise[0] + add + addbrackets(this.exercise[1]) + ' = ';
+			this.controlparam = 2;
+			break;
+		}
+		break;
+	}
+	return ex;
+};
+}
+
+//Объект, в задачи которого входит отрисовка, визуализация, проверки примера
+function Exerc()
+{
+	//Создание нового объекта приммера. multi - ссылка на объект - пример
+	//Текстовая строка вида 3 * 4 = хранится в переменной textContent
+	this.multi = new Multiple();
+	this.multi.rand();
+	var textContent = this.multi.generator();
+	//ссылка на элемент DOM
+	this.htmlfragm = {};
+	//Выдача правильного ответа при проверке
+	this.answerprint = config.conf['answerprint'].value;
+	//функция типа ввода. Предусматривает выбор между способами ввода ответа
+
+	//Вывод задания на экран. Задание вставляется в div id = exercisions
+	this.make = function()
+	{
+		this.htmlfragm = document.createElement("div");
+		this.htmlfragm.className = "Exerc";
+		this.htmlfragm.innerHTML = textContent + '<input type="text" size="3" maxlength="6"/><span></span>';
+		document.getElementById("exercisions").appendChild(this.htmlfragm);
+	};
+
+	//функция проверки примера и вывода на экран правильного ответа
+	this.control = function() {
+		var result;
+		var colour;
+		var answer = this.htmlfragm.getElementsByTagName("input")[0].value;
+		result = this.multi.control(answer);
+		if(result){
+			colour ="#0C0";
+		} else {
+			colour ="#F00";
+			if (this.answerprint != 0) {
+				this.htmlfragm.getElementsByTagName("span")[0].innerHTML = " " + this.multi.answerer();
+			}
+		}
+		this.htmlfragm.getElementsByTagName("input")[0].style.color = colour;
+		this.htmlfragm.getElementsByTagName("input")[0].style.borderColor = colour;
+		//Start save exercise and answer to statistic
+		statistic.push(textContent + " " + answer,result);
+                return result;
+	};
+}
+
+//Объект отрисовки страницы и инициализации нужного количества заданий
+var main = {};
+
+//
+main.win ="";
+main.exercises = [];
+
+//Выводит основные элементы управления и запускает отрисовку
+//
+main.init =  function()
+{
+	save.getUIDfromLoc();
+	save.renewLinksWithUID();
+
+	save.loadOne(function() {
+		init.start();
+		main.output();
+	})
+	//main.keyboard.init();
+};
+
+//отрисовывает задания
+main.output =  function()
+{
+	main.win = "Exerc";
+	main.exercout = config.conf['exercout'].value;
+	document.getElementById("exercisions").innerHTML = "";
+	for (var i = 0; i < main.exercout; i++) {
+		main.exercises[i] = new Exerc();
+		main.exercises[i].make();
+	}
+    main.popup.submit();
+    main.keyboard.init();
+};
+//удаляет задания и инициализирует main.output
+main.clean =  function()
+{
+	main.exercout = config.conf['exercout'].value;
+	for (var i = 0; i < main.exercout; i++) {
+		main.exercises[i].htmlfragm.parentNode.removeChild(main.exercises[i].htmlfragm);
+		delete main.exercises[i];
+	}
+	main.output();
+};
+//проверяет результаты, открывает окно с результатами, запускает запись статистики, при закрытии
+//------in work------
+//одидание функции записо статистики
+main.result =  function()
+{
+	main.exercout = config.conf['exercout'].value;
+    var rights = 0;//количество правильных ответов
+    var errors = 0;//количество неправильных ответов
+    for (var i = 0; i < main.exercout; i++) {
+	var val = main.exercises[i].control();
+        if (val){
+            rights ++;
+        } else {
+            errors ++;
+        }
+    }
+    main.popup.results(rights,errors);//неготовый интерфейс вывода результатов
+};
+
+
+//Интерфейсы управления и вывода вспомогательной информации
+//------in work------
+//вывод диалога настроек
+//цифровая клавиатура для смартфонов
+//Она содержит функцию вывода клавиатуры и функцию обработки нажатий.
+//Дополнительно нужны функции контроля за фокусом и добавления обработчиков событий onFocus для всех полей формы.
+//внутренняя функция прокрутки (актуальна для смартфонов)
+//
+main.popup = {};
+
+//Добавляет кнопку "Готово"
+main.popup.submit = function()
+{
+    var pop = document.getElementById("pop");
+    pop.innerHTML = "";
+    var submit = document.createElement("input");
+    submit.type = "button";
+    submit.value = "Готово";
+    pop.appendChild(submit);
+    submit.onclick = main.result;
+};
+
+//Выводит результаты и кнопку новое тестирование
+main.popup.results = function(rights,errors)
+{
+    var pop = document.getElementById("pop");
+    pop.innerHTML = "<div>Правильных ответов - " + rights +" Неправильных ответов - " + errors + "</div>";
+    var submit = document.createElement("input");
+    submit.type = "button";
+    submit.value = "Новый тест";
+    submit.onclick = main.output;
+    pop.appendChild(submit);
+    var reset = document.createElement("input");
+    reset.type = "button";
+    reset.value = "Попробовать снова";
+    pop.appendChild(reset);
+    reset.onclick = main.popup.submit;
+};
+
+//вывод кнопки сохранения настроек
+main.popup.configsave = function()
+{
+    var pop = document.getElementById("pop");
+    pop.innerHTML = "";
+    var submit = document.createElement("input");
+    submit.type = "button";
+    submit.value = "Сохранить в объект";
+    pop.appendChild(submit);
+    submit.onclick = config.save;
+    var submit3 = document.createElement("input");
+    submit3.type = "button";
+    submit3.value = "Сохранить в меню";
+    pop.appendChild(submit3);
+    submit3.onclick = save.config.saveToMenu;
+};
+
+//Функции клавиатуры
+main.keyboard = {};
+main.keyboard.targets = {};
+main.keyboard.pointer = 0;
+main.keyboard.keyboard ={};
+main.keyboard.body = '<input type="button" value="1" onclick="main.keyboard.click(1)" />';
+main.keyboard.body +='<input type="button" value="2" onclick="main.keyboard.click(2)" />';
+main.keyboard.body +='<input type="button" value="3" onclick="main.keyboard.click(3)" />';
+main.keyboard.body +='<input type="button" value="4" onclick="main.keyboard.click(4)" />';
+main.keyboard.body +='<input type="button" value="5" onclick="main.keyboard.click(5)" />';
+main.keyboard.body +='<input type="button" value="6" onclick="main.keyboard.click(6)" />';
+main.keyboard.body +='<input type="button" value="7" onclick="main.keyboard.click(7)" />';
+main.keyboard.body +='<input type="button" value="8" onclick="main.keyboard.click(8)" />';
+main.keyboard.body +='<input type="button" value="9" onclick="main.keyboard.click(9)" />';
+main.keyboard.body +='<input type="button" value="0" onclick="main.keyboard.click(0)" />';
+main.keyboard.body +='<input type="button" value="." onclick="main.keyboard.click(10)"/>';
+main.keyboard.body +='<input type="button" value="-" onclick="main.keyboard.click(11)"/>';
+main.keyboard.body +='<input type="button" value="очистить" onclick="main.keyboard.click(12)"/>';
+main.keyboard.body +='<input type="button" value="далее" onclick="main.keyboard.insert()"/>';
+//инициализация ключевых переменных
+main.keyboard.init = function(){
+	main.keyboard.pointer = 0;
+	main.keyboard.keyboard = document.createElement("div");
+	main.keyboard.keyboard.id = "keyboard";
+//	main.keyboard.keyboard.style.display = "none";
+	main.keyboard.keyboard.innerHTML = main.keyboard.body;
+	var htmlfragm = document.getElementById("exercisions");
+	main.keyboard.targets = htmlfragm.querySelectorAll("input[type=text]");
+	main.keyboard.insert(0);
+};
+//Функция вставки клавиатуры в блок примера
+//Если аргумента key нет, он задается как main.keyboard.pointer, в дефолте равный нулю.
+//В таком виде он вызывается кнопкой 12 (далее) на клавиатуре.
+main.keyboard.insert = function(key){
+	if(!key) key = main.keyboard.pointer;
+	if(key > main.keyboard.targets.length - 1) {main.keyboard.pointer = 0; key = 0}
+	main.keyboard.targets[key].parentNode.appendChild(main.keyboard.keyboard);
+	main.keyboard.pointer ++;
+};
+
+main.keyboard.display = function(){
+	if(main.keyboard.keyboard.style.display != "none"){
+		main.keyboard.keyboard.style.display = "none";
+	} else{
+		main.keyboard.keyboard.style.display ="block";
+	}
+};
+
+//Обработка нажатия клавиши
+main.keyboard.click = function(event){
+	 if(event >= 10){
+	 	switch (event) {
+	 		case 10: main.keyboard.targets[main.keyboard.pointer - 1].value += "."; break;
+	 		case 11: main.keyboard.targets[main.keyboard.pointer - 1].value += "-"; break;
+	 		case 12: main.keyboard.targets[main.keyboard.pointer - 1].value =  "" ; break;
+	 	}
+	} else {
+	 	main.keyboard.targets[main.keyboard.pointer - 1].value += event;
+	}
+};
+
+-->
+</script>
+<title>Таблица умножения</title>
+</head>
+<body onload="main.init()">
+    <div id="toolbar">
+        <ul>
+			<li><a href="index.html">Главное&nbsp;меню</a></li>
+			<li><a href="manual.html">Справочное&nbsp;бюро</a></li>
+			<li><a href="stat.html">Статистика</a></li>
+        </ul>
+    </div>
+    <div id="exercisions"></div>
+    <div id="pop"></div>
+    <div id="header">
+		<p>Version 1.0.0</p><!-- TODO number of version sinhron with cordova config.xml-->
+		<p>&copy; Michael Levitsky</p>
+	</div>
+</body>
+</html>

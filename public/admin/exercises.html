@@ -1,0 +1,90 @@
+<html>
+<head>
+	<title>Управление заданиями</title>
+	<script type="text/javascript" src="/javascripts/jquery.js"></script>
+	<script type="text/javascript" src="users-adm.js"></script>
+	<script type="text/javascript" src="until.js"></script>
+	<script type="text/javascript" src="exercises-admin.js"></script>
+	<script type="text/javascript">
+
+	$(document).ready(function() {
+	/**
+	* Привязка свойств элементов страницы и обработчиков событий нажатия
+	*/
+	/**
+	* Вывести таблицу пользоваелей для выбора
+	*/
+	function showUsersTable (self) {
+		$("#users-list").show();
+		$("#select").click(function() {
+			self.directs = User.readCheckboxes("selected")
+			self.setDirect(self.directs)
+			closeUsersTable()
+		})
+		$("#close").click(closeUsersTable)
+		User.setCheckboxes("selected",self.directs)
+	}
+
+	function closeUsersTable () {
+		User.resetCheckboxes("selected")
+		$("#users-list").hide();
+		$("#select").off();
+		$("#close").off();
+	}
+
+	/**
+	* Статические свойства объекта Exercise, отвечающие за его отображение
+	*/
+
+	Exercise.table = {
+		element: $("#exercises-list"),
+		tr:`<td><a href="test.html" data-href=eid data-content=menuname data-link=exercise></a></td>
+			<td><a href="stat.html" data-href=eid>Статистика</a></td>
+			<td><a href="#" data-link=del>[Удалить]</a></td>
+			<td><a href="#" data-link=direct>[Адресовать]</a></td>`,
+		links:{
+			exercises:function exercises (self) {},
+			del:function del (self) {self.del()},
+			// Функция подготовки к выбору пользователя
+			direct:function direct (self) {showUsersTable(self);}
+		}
+	}
+
+	/**
+	* Статические свойства объекта User отвечающие за его отображение
+	*/
+	User.table ={
+		element:$("[data-content=user]"),
+		tr:`<tr>
+			<td><input type=checkbox data-checkbox=selected></td>
+			<td data-content=name></td>
+			</tr>`
+	}
+
+
+		Exercise.load()
+		User.load()
+	});
+	</script>
+
+</head>
+<body>
+	<h1>Управление заданиями</h1>
+	<ul>
+		<li><a href="users.html">Управление пользователями</a></li>
+		<li><a href="test.html">Новое упражнение</a></li>
+		<li><a href="stat.html">Статистика</a></li>
+	</ul>
+	<p>
+		В этом файле можно посмотреть список всех заданий,
+		адресовать задание конкретному пользователю и удалить ненужное
+	</p>
+	<div><table data-content=exercises id="exercises-list"></table></div>
+	<div id="users-list" style="display:none">
+		<table data-content=user></table>
+		<a href="#" id="select">[Выбрать]</a>
+		<a href="#" id="close">[Отмена]</a>
+	</div>
+
+</body>
+</html>
