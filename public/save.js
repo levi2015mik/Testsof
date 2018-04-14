@@ -250,8 +250,9 @@ save.loadOne = function loadOne (callback) {
 save.statUpload = function statUpload(element){
 	var path = "/use/statistic/" + save.location.UID;
 	$.ajax(path,{
+		contentType:"application/json",
 		type:"post",
-		data:element,
+		data:JSON.stringify(element),
 		success: function(result) {console.log(result)},
 		error: until.ajaxError
 	})

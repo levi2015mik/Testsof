@@ -74,7 +74,8 @@ Exercise.prototype.setDirect = function setDirects (directs) {
 	$.ajax(path,
 	{
 		type:"post",
-		data:data,
+		contentType:"application/json",
+		data:JSON.stringify(data),
 		success: function() {
 			until.popUp("Данные записаны")
 		},

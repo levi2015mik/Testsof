@@ -3,8 +3,14 @@
 "use strict"
 var mongo = require("mongodb");
 // Подключение и используемая база данных
-var path = process.env.MONGODB_URI;
-var db = "heroku_f069r4wl";
+// if(process.env.MONGODB_URI != undefined) {
+// 	var path = process.env.MONGODB_URI;
+// 	var db = "heroku_f069r4wl"
+// }
+// else{
+	var path = "mongodb://localhost:27017"
+	var db = "test";
+// }
 
 var connection = mongo.connect(path).
 	then(

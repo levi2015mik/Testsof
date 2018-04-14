@@ -250,7 +250,8 @@ save.addExercise = function() {
 	var path = "/exercises/add/"
 	$.ajax(path,{
 		type:"post",
-		data:config.conf,
+		contentType:"application/json",
+		data:JSON.stringify(config.conf),
 		success: function() {until.popUp("Создано новое упражнение")},
 		error: until.ajaxError
 	})
@@ -261,7 +262,8 @@ save.statUpload = function statUpload(element){
 	var path = "/use/statistic/" + save.location.UID;
 	$.ajax(path,{
 		type:"post",
-		data:element,
+		contentType:"application/json",
+		data:JSON.stringify(element),
 		success: function(result) {console.log(result)},
 		error: until.ajaxError
 	})

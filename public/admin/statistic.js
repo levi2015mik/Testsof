@@ -204,6 +204,8 @@ statistic.write = function(day,hour,element){
                 statStr.innerHTML = statistic.table[start].str;
                 statStr.style.color = color;
                 field.appendChild(statStr);
+                var br = document.createElement("br");
+                field.appendChild(br)
                 start ++
             }
             var hr = document.createElement("hr");

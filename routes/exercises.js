@@ -34,9 +34,12 @@ router.get('/del/:id', function(req, res, next) {
 */
 router.post('/direct/:id', function(req, res, next) {
 	var data = req.body.directs;
+	console.log(req.body)
 	exercises.direct(req.params.id,data).
 	then(eRes => res.send(eRes),
-		err => res.status(500).send({error:{name:err.name,message:err.message}}));
+		err => {
+			res.status(500).send({error:{name:err.name,message:err.message}})}
+		);
 });
 
 // add
