@@ -4,7 +4,7 @@
 var mongo = require("mongodb");
 // Подключение и используемая база данных
 var path = process.env.MONGODB_URI;
-var db = "test";
+var db = "heroku_f069r4wl";
 
 var connection = mongo.connect(path).
 	then(
