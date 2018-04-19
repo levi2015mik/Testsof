@@ -7,16 +7,27 @@
     <meta charset="utf-8">
     <link href="test.css" rel="stylesheet" media="all">
     <style type="text/css">
-        #toolbar li {
-            display: block;
-            width: auto;
-            padding: 5px 50px;
-        }
-/*        #toolbar  span {
-            color: #F00;
-            padding-left: 150px;
-        }
-*/    
+    table{
+        margin: 10px;
+        width: 60%;
+        border: solid 1px;
+    }
+    td{
+        padding:4px;
+    }
+    caption{
+        text-align: right;
+        font-style: italic;
+        font-size: 100%;
+        padding-right: 20px;
+    }
+
+    h3{
+        font-size: 200%;
+        color: #006600;
+        margin-left: 50px
+    }
+
     </style>
     <script src="save.js" type="text/javascript"></script>
     <script src="exercises.js" type="text/javascript"></script>
@@ -47,29 +58,36 @@
             userData = result.user
             Exercise.load(result.personal,personalExercises,$("#personal"))
             Exercise.load(result.common,commonExercises,$("#common"))
+            $("#common").find("tr").hide()
 
             $("#username").html(userData.name);
             save.renewLinksWithUID()
             $("#statistic").prop("href","stat.html?UID=" + save.location.UID + "&EID=*")
         })
+
+        $("#common caption").click(()=>$("#common").find("tr").toggle())
     })
     </script>
 </head>
 <body>
-<div id="toolbar">
     <div>
+        <div id="toolbar">
+            <li><a href="#fg" id="statistic">Статистика</a></li>
+        </div>
         <h3>Приветствую тебя, <span id="username"></span>!</h3>
-        <a href="#fg" id="statistic">Статистика</a>
     </div>
     <div>
-        <h5>Задания для тебя</h5>
-        <table id="personal"></table>
+        <table id="personal">
+            <caption>Задания для тебя</caption>
+            <col width="80%"><col align="right">
+        </table>
     </div>
     <div>
-        <h5>Эти тоже хорошо поделать</h5>
-        <table id="common"></table>
+        <table id="common">
+            <caption>Общие</caption>
+            <col width="80%"><col align="right">
+        </table>
     </div>
-</div>
 <div id="header">
     <p>Version 1.0.0</p><!-- TODO number of version sinhron with cordova config.xml-->
     <p>&copy; Michael Levitsky</p>

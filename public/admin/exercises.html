@@ -1,6 +1,7 @@
 <html>
 <head>
 	<title>Управление заданиями</title>
+	<link rel="stylesheet" type="text/css" href="test.css">
 	<script type="text/javascript" src="/javascripts/jquery.js"></script>
 	<script type="text/javascript" src="users-adm.js"></script>
 	<script type="text/javascript" src="until.js"></script>
@@ -55,10 +56,8 @@
 	*/
 	User.table ={
 		element:$("[data-content=user]"),
-		tr:`<tr>
-			<td><input type=checkbox data-checkbox=selected></td>
-			<td data-content=name></td>
-			</tr>`
+		tr:`<td><input type=checkbox data-checkbox=selected></td>
+			<td data-content=name></td>`
 	}
 
 
@@ -69,12 +68,14 @@
 
 </head>
 <body>
+	<div id="toolbar">
+		<ul>
+			<li><a href="users.html">Управление пользователями</a></li>
+			<li><a href="test.html">Новое упражнение</a></li>
+			<li><a href="stat.html">Статистика</a></li>
+		</ul>
+	</div>
 	<h1>Управление заданиями</h1>
-	<ul>
-		<li><a href="users.html">Управление пользователями</a></li>
-		<li><a href="test.html">Новое упражнение</a></li>
-		<li><a href="stat.html">Статистика</a></li>
-	</ul>
 	<p>
 		В этом файле можно посмотреть список всех заданий,
 		адресовать задание конкретному пользователю и удалить ненужное

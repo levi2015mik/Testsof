@@ -56,6 +56,7 @@ statistic.get = function get(ids){
 	}
 	return mongo.then(res => res.collection(collectionName)).
 	then(res => res.find(filter)).
+	then(res => res.sort({"time":1})).
 	then(res => res.toArray())
 }
 
