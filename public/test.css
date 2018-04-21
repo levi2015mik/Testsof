@@ -3,6 +3,7 @@ html, body {
 	padding:0;
 	border:0;
 	font-size: 120%;
+	font-family: Trebuchet MS;
 }
 #toolbar {
 	margin:0;
@@ -64,8 +65,8 @@ html, body {
 	border-radius: 5px;
 	border: 0 solid #00F;
 }
-#exercisions input {
-	font-size: 90%;
+#exercisions input[type=text] {
+	font-size: 300%;
 	margin-left: 10px;
 	border-width: 4px;
 	padding-bottom: 0;
@@ -85,6 +86,12 @@ html, body {
 #exercisions span {
 	display: inline-block;
 	margin-left: 50px;
+	font-size: 300%
+}
+#exercisions span.exstr {
+	display: inline-block;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 #exercisions p {
 	margin-top: 0;
@@ -168,6 +175,7 @@ html, body {
 }
 #keyboard input {
 	margin: 5px;
+	font-size: 1em;
 }
 #keyboard input{
 	/*font-size: 60px;*/

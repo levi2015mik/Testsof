@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <link href="test.css" rel="stylesheet" media="all">
 <script type="text/javascript" src="save.js"></script>
-<script type="text/javascript" src="config.js"></script>
 <script type="text/javascript" src="statistic.js"></script>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="until.js"></script>
@@ -110,12 +109,6 @@ init.start = function() {
 //        if(typeof main.keyboard != "undefined") {
 //            writeToolbar(main.keyboard.display, "Клавиатура");
 //        }
-		if(typeof FileSet != "undefined") {
-			writeToolbar(function(){ alert(0);}, "Сохранить примеры");
-		}
-		//writeToolbar("stat.html", "Статистика");
-		writeToolbar(config.edit, "настройки");		
-
 	}
 	
 	this.arrays()
@@ -287,7 +280,7 @@ function Exerc()
 	{
 		this.htmlfragm = document.createElement("div");
 		this.htmlfragm.className = "Exerc";
-		this.htmlfragm.innerHTML = textContent + '<input type="text" size="3" maxlength="6"/><span></span>';
+		this.htmlfragm.innerHTML = "<span class='exstr'>" + textContent + "</span>" + '<input type="text" size="3" maxlength="6"/><span></span>';
 		document.getElementById("exercisions").appendChild(this.htmlfragm);
 	};
 

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link href="test.css" rel="stylesheet" media="all">
+    <title>Таблица умножения</title>
+    <script type="text/javascript">
+        function load(){
+            contentTable();
+            main.init();
+        }
+        //автооглавление с добавлением якорей и кнопок наверх
+        function contentTable(){
+            var contTable = document.querySelector("#cont_table");
+            var content = document.querySelector("#content").childNodes;
+            for(var i=0;i<content.length;i++){
+                //
+                if(content[i].nodeName == "H1"){
+                    var key = Math.random()*10 + "" + Math.random()*10;
+
+                    var tableHeader=document.createElement("A");
+                    tableHeader.href = "#" + key;
+                    tableHeader.innerHTML = content[i].outerHTML;
+                    contTable.appendChild(tableHeader);
+
+                    var link = document.createElement("A");
+                    link.href = "#toptable";
+                    link.name = key;
+                    link.innerHTML = "[наверх]";
+                    content[i].appendChild(link);
+                }
+            }
+        }
+    </script>
+</head>
+<body onload="load()">
+<div id="toolbar">
+    <ul>
+        <li><a href="index.html">Главное&nbsp;меню</a></li>
+        <li><a href="stat.html">Статистика</a></li>
+    </ul>
+</div>
+<div id="exercisions">
+    <div id="cont_table">
+        <a name="toptable"></a>
+    </div>
+    <div id ="content">
+        <h1>Таблица умножения</h1>
+        <img src="images/1.gif"/><br/>
+        <img src="images/2.gif"/><br/>
+        72 = 9 &bull; 8 = 8 &bull; 9<br/>
+        36 = 6 &bull; 6 = 4 &bull; 9 = 9 &bull; 4<br/>
+        24 = 4 &bull; 6 = 6 &bull; 4 = 3 &bull; 8 =8 &bull; 3<br/>
+        Составь аналогичные цепочки
+        <h1>Умножение десятичных дробей</h1>
+        Алгоритм действия:
+        <ol>
+            <li>Умножаем, не обращая внимания на запятые.</li>
+            <li>Отделяем запятой справа столько знаков, сколько в обоих сомножителях вместе.</li>
+        </ol>
+        <img src="images/3.gif"/><br/>
+        <img src="images/4.jpg"/>
+        <h1>Деление десятичных дробей</h1>
+        <h2>Деление десятичной дроби на натуральное число</h2>
+        Алгоритм действия:
+        <ol>
+            <li>Выполняем деление целой части</li>
+            <li class="red">Ставим запятую </li>
+            <li>Выполняем деление дробной части<br/>
+            <p class="bold"> 32, 24 : 8 = 4,03</p>
+                <p>(32:8=4  Целая часть закончилась – ставим запятую.
+                2на 8 не делится. Ставим 0. 24:8=3 Ответ: 4,03)</p>
+            <p class="bold"> 0,81 : 9 = 0,09</p>
+                <p>(0 на 9 не делится. Ставим в ответе 0.
+                    Целая часть закончилась – ставим запятую.
+                    8 на 9 не делится. Ставим в ответе 0.
+                    81:9=9 Ответ: 0,09)</p>
+            <p class="bold">0,3 : 6 = 0,3<span class="cyan">0</span> : 6 = 0,05<br/> т.к. 0,3 = 0,3<span class="cyan">00…</span></p>
+                <p>(к десятичной дроби можно приписать справа сколько угодно нулей)</p>
+                <p class="red">Кончилась целая часть - ставь запятую!</p>
+
+            </li>
+        </ol>
+        <img src="images/5.jpg">
+        <h2>Деление на десятичную дробь</h2>
+        <p class="bold">Делимое : делитель = частное</p>
+        Алгоритм действия:
+        <ol>
+            <li>В делимом и в делителе перенести запятую вправо на столько цифр, сколько их в делителе.</li>
+            <li>Выполнить деление на натуральное число. ( Смотри Деление десятичной дроби на натуральное число)</li>
+        </ol>
+        <p class="bold">4,5 : 0,125</p>
+        <img src="images/6.gif"><br/>
+        <img src="images/7.gif">
+        <h1>Правила умножения и деления отрицательных чисел</h1>
+        <ol>
+            <li>При умножении и делении 2-х чисел с разными знаками получаем число отрицательное.<br/>
+                <span class="red">-</span> 2,5 &bull; 0,4 = <span class="red">-</span> 1<br/>
+                0,75 : (<span class="red">-</span> 5) = <span class="red">-</span> 0,15<br/>
+            </li>
+            <li>При умножении и делении 2-х отрицательных чисел получаем число положительное.<br/>
+                <span class="red">-</span> 2,5 &bull; (<span class="red">-</span> 0,4) =  1<br/>
+                <span class="red">-</span> 0,75 : (<span class="red"> -</span> 5) =  0,15<br/>
+            </li>
+        </ol>
+        <p>Впервые правила знаков при умножении отрицательных и положительных чисел сформулировали индийские ученые.
+        Объяснить, почему при умножении отрицательного числа на положительное  получается отрицательное число, несложно.
+        Для этого достаточно только заменить умножение сложением, например,<br/>
+        (-7)&bull; 3=-7+(-7)+(-7)=-21.</p>
+        <p>А вот объяснения правил умножения отрицательных чисел даже самые крупные математики 18-ого века давали на редкость туманные.
+        Английский поэт У.Г. Оден с огорчением воскликнул:</p>
+        <p class="red">«Минус на минус – всегда только плюс.<br/>
+        Отчего так бывает, сказать не берусь».</p>
+
+        <p>В современной математике равенства<br/>
+        а(-b)=- аb и (-а)(-b)=аb<br/>
+        принимают без всяких доказательств.</p>
+
+        <h1>Решение уравнений </h1>
+        <p>Простейшее уравнение  <span class="bold">ах = b</span> </p>
+        <p><span class="bold">а</span> – коэффициент при х</p>
+        <img src="images/8.gif">
+        <p class="bold">Делим на коэффициент!</p>
+        <ol>
+            <li>0,06х = 3,6<br/>
+                х =  3,6 : 0,06 <span>3,6 : 0,06 = 360 : 6 = 60</span><br/>
+                х = 60<br/>
+                Ответ: 60
+            </li>
+            <li>х &bull; 12,5 = 1<br/>
+                12,5х = 1<br/>
+                х = 1 : 12,5         <span>1 : 12,5=10 : 125=0,08</span><br/>
+                х = 0,08<br/>
+                Ответ: 0,08
+            </li>
+        </ol>
+    </div>
+</div>
+<div id="pop"></div>
+<div id="header">
+    <p>Version 0.1.5</p><!-- TODO number of version sinhron with cordova config.xml-->
+    <p>&copy; Michael Levitsky</p></div>
+</body>
+</html>
